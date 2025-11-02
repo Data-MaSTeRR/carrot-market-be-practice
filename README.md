@@ -42,14 +42,23 @@ Spring Boot와 MySQL을 사용한 당근마켓 클론 프로젝트입니다.
 
 ## 데이터베이스 ERD
 
+![erd.png](img/erd.png)
+
 ```
 User (사용자)
 ├── id (PK)
+├── username
 ├── email (unique)
 ├── password
 ├── nickname
+├── phoneNumber
+├── profileImageUrl
 ├── location (지역)
-└── createdAt
+├── mannerTemperature (매너온도)
+├── role (USER/ADMIN)
+├── isActive
+├── createdAt
+└── updatedAt
 
 Product (상품)
 ├── id (PK)
@@ -57,11 +66,19 @@ Product (상품)
 ├── title
 ├── description
 ├── price
+├── category
 ├── location
-├── status (판매중/예약중/거래완료)
+├── status (ON_SALE/RESERVED/SOLD_OUT)
 ├── viewCount
+├── chatCount
 ├── likeCount
-└── createdAt
+├── imageUrls (List)
+├── createdAt
+└── updatedAt
+
+ProductImage (상품 이미지)
+├── product_id (FK -> Product)
+└── image_url
 
 ProductLike (상품 좋아요)
 ├── id (PK)
@@ -74,13 +91,15 @@ ChatRoom (채팅방)
 ├── productId (FK -> Product)
 ├── buyerId (FK -> User)
 ├── sellerId (FK -> User)
-└── createdAt
+├── createdAt
+└── updatedAt
 
 ChatMessage (채팅 메시지)
 ├── id (PK)
 ├── chatRoomId (FK -> ChatRoom)
 ├── senderId (FK -> User)
 ├── message
+├── isRead
 └── createdAt
 ```
 
@@ -88,8 +107,16 @@ ChatMessage (채팅 메시지)
 
 ### 1. MySQL 데이터베이스 생성
 
+SQL 스키마 파일을 사용하여 데이터베이스와 테이블을 생성합니다:
+
+```bash
+mysql -u root -p < schema.sql
+```
+
+또는 직접 생성:
+
 ```sql
-CREATE DATABASE carrot_market;
+CREATE DATABASE IF NOT EXISTS carrot_market CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
 ### 2. application.yml 설정
@@ -99,9 +126,14 @@ CREATE DATABASE carrot_market;
 ```yaml
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/carrot_market?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: your_username
+    url: jdbc:mysql://localhost:3306/carrot_market?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+    username: root
     password: your_password
+
+  jpa:
+    hibernate:
+      ddl-auto: update  # 테이블 자동 생성/업데이트
+    show-sql: true
 ```
 
 ### 3. 프로젝트 빌드 및 실행

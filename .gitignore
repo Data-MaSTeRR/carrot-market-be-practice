@@ -93,3 +93,6 @@ package-lock.json
 yarn.lock
 dist/
 .tmp/
+
+# ---- Claude ----
+.claude/
