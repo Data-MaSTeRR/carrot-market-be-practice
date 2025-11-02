@@ -1,0 +1,95 @@
+# ---- OS & general ----
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.tmp
+*.log
+logs/
+*.orig
+
+# ---- Java / build ----
+target/
+build/
+out/
+classes/
+bin/
+generated/
+generated-sources/
+.generated/
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+
+# ---- Spring config (로컬 비밀값/환경 전용) ----
+# 필요 시 선택적으로 사용: 로컬 전용 프로필/비밀키는 커밋 금지
+application-local.properties
+application-local.yml
+application-*.local.properties
+application-*.local.yml
+.env
+.env.*
+.secret
+secrets/
+*.keystore
+*.p12
+
+# ---- Test outputs ----
+surefire-reports/
+failsafe-reports/
+test-results/
+jacoco.exec
+jacoco-report/
+pitest/
+coverage/
+
+# ---- Maven ----
+.mvn/timing.properties
+# (wrapper는 커밋 권장: .mvn/wrapper/* 포함 여부 확인)
+# mvn repo 캐시가 루트에 있다면(비권장) 무시
+.repository/
+
+# ---- Gradle ----
+.gradle/
+gradle-app.setting
+build/           # (위 'build/'와 중복 가능하지만 안전하게 유지)
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# ---- IntelliJ IDEA ----
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# ---- Eclipse / STS ----
+.project
+.classpath
+.settings/
+.springBeans
+.apt_generated/
+.factorypath
+.worksheet
+
+# ---- VS Code ----
+.vscode/
+.history/
+
+# ---- Docker / Compose (로컬 전용) ----
+docker-data/
+**/docker/**/data/
+**/docker/**/tmp/
+compose.override.yml
+
+# ---- Lombok ----
+lombok.config
+
+# ---- Misc tools ----
+node_modules/
+package-lock.json
+yarn.lock
+dist/
+.tmp/
