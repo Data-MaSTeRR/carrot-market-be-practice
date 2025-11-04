@@ -69,8 +69,9 @@
                                 </button>
                             </div>
                             <h2 class="text-2xl font-bold">${user.username}</h2>
+                            </br>
                             ${hasProfileImage
-                                ? `<button onclick="deleteProfileImage()" class="mt-2 text-sm text-red-500 hover:text-red-700">
+                                ? `<button onclick="deleteProfileImage()" class="mt-2 text-xs text-grey-100 hover:text-red-700">
                                      <i class="fas fa-trash"></i> 프로필 사진 삭제
                                    </button>`
                                 : ''
