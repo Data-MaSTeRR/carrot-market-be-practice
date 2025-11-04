@@ -57,6 +57,17 @@ jwt:
   secret: ${JWT_SECRET:fouM1TYPkP5pejlTXSQ1kXKHAwO4BApoQ6O9o2Wx02e+wh8xF93Rq8BdvlCLLX2nR0jsOGbA0KQoVYLvqPm7ww==}
   expiration: ${JWT_EXPIRATION:3600000} # 1시간 (밀리초)
 
+# Kakao Maps API 설정
+kakao:
+  map:
+    # IMPORTANT: 실제 사용 시 Kakao Developers에서 발급받은 REST API 키를 환경변수로 설정하세요
+    # 발급 방법: https://developers.kakao.com/console/app
+    # 1. 카카오 개발자 사이트 로그인
+    # 2. 내 애플리케이션 > 앱 추가하기
+    # 3. 앱 선택 > 앱 키 > REST API 키 복사
+    # export KAKAO_MAP_API_KEY="발급받은_REST_API_KEY"
+    api-key: ${KAKAO_MAP_API_KEY:c0fae4425d4649378b558ff043ac75bd}
+
 logging:
   level:
     com.carrot.market: DEBUG

@@ -57,7 +57,8 @@ public class SecurityConfig {
             "/api/products",
             "/api/products/*",
             "/api/products/search",
-            "/api/products/location"
+            "/api/products/location",
+            "/api/location/**", // 카카오 location API 전체 허용
     };
 
     // Swagger UI 엔드포인트
