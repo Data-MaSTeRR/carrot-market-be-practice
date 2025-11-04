@@ -43,7 +43,13 @@ public class SecurityConfig {
 
     // 인증 없이 접근 가능한 공개 엔드포인트
     private static final String[] PUBLIC_ENDPOINTS = {
+
+            // 타임리프 테스트용
             "/",
+            "/signup",
+            "/login",
+
+            // 운영용
             "/api/auth/**",
             "/api/products",
             "/api/products/*",
