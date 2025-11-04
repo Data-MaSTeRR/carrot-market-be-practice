@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,6 +21,7 @@ public class UserResponse {
     private String profileImageUrl;
     private String location;
     private Double mannerTemperature;
+    private LocalDateTime createdAt;
 
     public static UserResponse from(User user) {
         return UserResponse.builder()
@@ -29,6 +32,7 @@ public class UserResponse {
                 .profileImageUrl(user.getProfileImageUrl())
                 .location(user.getLocation())
                 .mannerTemperature(user.getMannerTemperature())
+                .createdAt(user.getCreatedAt())
                 .build();
     }
 }
