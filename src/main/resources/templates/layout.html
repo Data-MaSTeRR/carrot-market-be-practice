@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title layout:title-pattern="$CONTENT_TITLE - $LAYOUT_TITLE">당근마켓</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        .primary-color {
+            background-color: #ff6f0f;
+        }
+        .primary-text {
+            color: #ff6f0f;
+        }
+        .primary-hover:hover {
+            background-color: #ff8533;
+        }
+    </style>
+    
+    <th:block layout:fragment="extra-css"></th:block>
+</head>
+<body class="bg-gray-50">
+    <!-- 상단 네비게이션 바 -->
+    <nav class="bg-white border-b border-gray-200 fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- 로고 -->
+                <div class="flex items-center">
+                    <a href="/" class="flex items-center space-x-2">
+                        <i class="fas fa-carrot text-3xl primary-text"></i>
+                        <span class="text-xl font-bold">당근마켓</span>
+                    </a>
+                </div>
+                
+                <!-- 검색바 (중간) -->
+                <div class="hidden md:flex flex-1 max-w-md mx-8">
+                    <div class="w-full">
+                        <input type="text" 
+                               id="searchInput"
+                               placeholder="물품을 검색해보세요" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                    </div>
+                </div>
+                
+                <!-- 우측 메뉴 -->
+                <div class="flex items-center space-x-4">
+                    <div id="authButtons" class="hidden space-x-2">
+                        <a href="/login" class="text-gray-700 hover:text-gray-900">로그인</a>
+                        <a href="/signup" class="primary-color primary-hover text-white px-4 py-2 rounded-lg">회원가입</a>
+                    </div>
+                    
+                    <div id="userMenu" class="hidden flex items-center space-x-4">
+                        <a href="/products/new" class="primary-color primary-hover text-white px-4 py-2 rounded-lg flex items-center">
+                            <i class="fas fa-plus mr-2"></i>
+                            판매하기
+                        </a>
+                        <a href="/chat" class="text-gray-700 hover:text-gray-900">
+                            <i class="fas fa-comment text-xl"></i>
+                        </a>
+                        <div class="relative">
+                            <button id="profileButton" class="flex items-center space-x-2 text-gray-700 hover:text-gray-900">
+                                <i class="fas fa-user-circle text-2xl"></i>
+                            </button>
+                            
+                            <!-- 드롭다운 메뉴 -->
+                            <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 border border-gray-200">
+                                <a href="/my/products" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-box mr-2"></i>판매내역
+                                </a>
+                                <a href="/my/likes" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-heart mr-2"></i>관심목록
+                                </a>
+                                <a href="/my/profile" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-cog mr-2"></i>설정
+                                </a>
+                                <hr class="my-2">
+                                <button id="logoutButton" class="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100">
+                                    <i class="fas fa-sign-out-alt mr-2"></i>로그아웃
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- 메인 컨텐츠 영역 -->
+    <main class="pt-16 min-h-screen">
+        <div layout:fragment="content"></div>
+    </main>
+
+    <!-- 토큰 만료 모달 -->
+    <div id="tokenExpiredModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100]">
+        <div class="bg-white rounded-lg p-8 max-w-md mx-4 shadow-xl">
+            <div class="text-center">
+                <div class="mb-4">
+                    <i class="fas fa-exclamation-circle text-6xl text-orange-500"></i>
+                </div>
+                <h2 class="text-2xl font-bold mb-4">로그인 만료</h2>
+                <p class="text-gray-600 mb-6">
+                    로그인이 만료되었습니다.<br>
+                    다시 로그인해주세요.
+                </p>
+                <button id="tokenExpiredConfirmBtn" class="primary-color primary-hover text-white px-8 py-3 rounded-lg font-bold w-full">
+                    로그인 페이지로 이동
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 하단 푸터 -->
+    <footer class="bg-white border-t border-gray-200 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="font-bold mb-4">당근마켓</h3>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li><a href="#" class="hover:text-gray-900">회사 소개</a></li>
+                        <li><a href="#" class="hover:text-gray-900">채용</a></li>
+                        <li><a href="#" class="hover:text-gray-900">광고</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold mb-4">고객지원</h3>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li><a href="#" class="hover:text-gray-900">자주 묻는 질문</a></li>
+                        <li><a href="#" class="hover:text-gray-900">공지사항</a></li>
+                        <li><a href="#" class="hover:text-gray-900">문의하기</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold mb-4">서비스</h3>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li><a href="#" class="hover:text-gray-900">이용약관</a></li>
+                        <li><a href="#" class="hover:text-gray-900">개인정보처리방침</a></li>
+                        <li><a href="#" class="hover:text-gray-900">위치기반서비스 이용약관</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold mb-4">소셜</h3>
+                    <div class="flex space-x-4 text-2xl text-gray-600">
+                        <a href="#" class="hover:text-gray-900"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="hover:text-gray-900"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="hover:text-gray-900"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-200 text-center text-sm text-gray-600">
+                <p>&copy; 2024 당근마켓 클론. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- 공통 JavaScript -->
+    <script>
+        // JWT 토큰 만료 확인 헬퍼 함수
+        function isTokenExpired(token) {
+            try {
+                // JWT의 payload 부분 디코딩 (형식: header.payload.signature)
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                // exp는 초 단위, Date.now()는 밀리초 단위이므로 1000을 곱함
+                return payload.exp * 1000 < Date.now();
+            } catch (e) {
+                // 토큰 디코딩 실패 시 만료된 것으로 간주
+                return true;
+            }
+        }
+
+        // 토큰 만료 모달 표시
+        function showTokenExpiredModal() {
+            const modal = document.getElementById('tokenExpiredModal');
+            modal.classList.remove('hidden');
+        }
+
+        // 토큰 만료 모달 확인 버튼 이벤트
+        document.getElementById('tokenExpiredConfirmBtn')?.addEventListener('click', function() {
+            window.location.href = '/login';
+        });
+
+        // 로컬스토리지에서 토큰 확인
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const authButtons = document.getElementById('authButtons');
+            const userMenu = document.getElementById('userMenu');
+
+            // 토큰이 있고 만료되지 않았으면 로그인 상태
+            if (token && !isTokenExpired(token)) {
+                authButtons.classList.add('hidden');
+                userMenu.classList.remove('hidden');
+            } else {
+                // 토큰이 없거나 만료되었으면 로그아웃 상태
+                if (token && isTokenExpired(token)) {
+                    // 만료된 토큰 제거
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    // 토큰 만료 모달 표시
+                    showTokenExpiredModal();
+                }
+                authButtons.classList.remove('hidden');
+                userMenu.classList.add('hidden');
+            }
+        }
+        
+        // 드롭다운 메뉴 토글
+        document.getElementById('profileButton')?.addEventListener('click', function() {
+            const dropdown = document.getElementById('dropdownMenu');
+            dropdown.classList.toggle('hidden');
+        });
+        
+        // 외부 클릭시 드롭다운 닫기
+        document.addEventListener('click', function(event) {
+            const profileButton = document.getElementById('profileButton');
+            const dropdown = document.getElementById('dropdownMenu');
+            
+            if (!profileButton?.contains(event.target) && !dropdown?.contains(event.target)) {
+                dropdown?.classList.add('hidden');
+            }
+        });
+        
+        // 로그아웃
+        document.getElementById('logoutButton')?.addEventListener('click', function() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            alert('로그아웃 되었습니다.');
+            window.location.href = '/';
+        });
+        
+        // 검색
+        document.getElementById('searchInput')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const keyword = this.value.trim();
+                if (keyword) {
+                    window.location.href = `/products?keyword=${encodeURIComponent(keyword)}`;
+                }
+            }
+        });
+        
+        // API 요청 헬퍼 함수
+        function apiRequest(url, options = {}) {
+            const token = localStorage.getItem('token');
+            const headers = {
+                'Content-Type': 'application/json',
+                ...options.headers
+            };
+
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            return fetch(url, {
+                ...options,
+                headers
+            }).then(response => {
+                // 토큰 만료 또는 인증 실패 시 처리
+                if (response.status === 401 || response.status === 403) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    // 토큰 만료 모달 표시
+                    showTokenExpiredModal();
+                    throw new Error('Unauthorized');
+                }
+                return response;
+            });
+        }
+        
+        // 페이지 로드시 인증 상태 확인
+        checkAuth();
+    </script>
+    
+    <th:block layout:fragment="extra-js"></th:block>
+</body>
+</html>
