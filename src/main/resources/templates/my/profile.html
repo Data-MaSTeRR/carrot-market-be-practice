@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>내 정보</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <h1 class="text-2xl font-bold mb-6">내 정보</h1>
+            
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <div id="profileInfo">
+                    <!-- 로딩 스피너 -->
+                    <div class="text-center py-12">
+                        <i class="fas fa-spinner fa-spin text-4xl text-gray-400"></i>
+                        <p class="text-gray-500 mt-4">정보를 불러오는 중...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <th:block layout:fragment="extra-js">
+        <script>
+            // 프로필 정보 로드
+            async function loadProfile() {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    window.location.href = '/login';
+                    return;
+                }
+                
+                try {
+                    const response = await apiRequest('/api/auth/me');
+                    const user = await response.json();
+                    
+                    displayProfile(user);
+                } catch (error) {
+                    console.error('프로필 로딩 실패:', error);
+                    document.getElementById('profileInfo').innerHTML = `
+                        <div class="text-center py-12">
+                            <i class="fas fa-exclamation-circle text-4xl text-red-400 mb-4"></i>
+                            <p class="text-gray-500">정보를 불러오는데 실패했습니다.</p>
+                        </div>
+                    `;
+                }
+            }
+            
+            // 프로필 표시
+            function displayProfile(user) {
+                const hasProfileImage = user.profileImageUrl && user.profileImageUrl.trim() !== '';
+
+                document.getElementById('profileInfo').innerHTML = `
+                    <div class="space-y-6">
+                        <div class="text-center mb-8">
+                            <div class="relative inline-block mb-4">
+                                ${hasProfileImage
+                                    ? `<img src="${user.profileImageUrl}" alt="프로필 사진" class="w-32 h-32 rounded-full object-cover border-4 border-orange-100">`
+                                    : `<div class="inline-block bg-orange-100 rounded-full p-8">
+                                         <i class="fas fa-user text-6xl primary-text"></i>
+                                       </div>`
+                                }
+                                <input type="file" id="profileImageInput" accept="image/*" class="hidden">
+                                <button onclick="document.getElementById('profileImageInput').click()"
+                                        class="absolute bottom-0 right-0 bg-orange-500 hover:bg-orange-600 text-white rounded-full p-2 shadow-lg transition">
+                                    <i class="fas fa-camera"></i>
+                                </button>
+                            </div>
+                            <h2 class="text-2xl font-bold">${user.username}</h2>
+                            </br>
+                            ${hasProfileImage
+                                ? `<button onclick="deleteProfileImage()" class="mt-2 text-xs text-grey-100 hover:text-red-700">
+                                     <i class="fas fa-trash"></i> 프로필 사진 삭제
+                                   </button>`
+                                : ''
+                            }
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="border-b pb-4">
+                                <label class="text-sm text-gray-500 block mb-1">이메일</label>
+                                <p class="text-lg">${user.email}</p>
+                            </div>
+                            
+                            <div class="border-b pb-4">
+                                <label class="text-sm text-gray-500 block mb-1">지역</label>
+                                <p class="text-lg">${user.location || '미설정'}</p>
+                            </div>
+                            
+                            <div class="border-b pb-4">
+                                <label class="text-sm text-gray-500 block mb-1">가입일</label>
+                                <p class="text-lg">${user.createdAt
+                                    ? new Date(user.createdAt).toLocaleDateString()
+                                    : '정보 없음'}
+                                   </p>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4 mt-8">
+                            <a href="/my/products" class="block text-center bg-gray-100 rounded-lg py-6 hover:bg-gray-200 transition">
+                                <i class="fas fa-box text-3xl primary-text mb-2"></i>
+                                <p class="font-medium">판매내역</p>
+                            </a>
+                            <a href="/my/likes" class="block text-center bg-gray-100 rounded-lg py-6 hover:bg-gray-200 transition">
+                                <i class="fas fa-heart text-3xl primary-text mb-2"></i>
+                                <p class="font-medium">관심목록</p>
+                            </a>
+                        </div>
+                    </div>
+                `;
+
+                // 파일 선택 이벤트 리스너 추가
+                document.getElementById('profileImageInput').addEventListener('change', uploadProfileImage);
+            }
+
+            // 프로필 사진 업로드
+            async function uploadProfileImage(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                // 파일 유효성 검증
+                const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+                if (!validTypes.includes(file.type)) {
+                    alert('JPG, PNG, GIF, WEBP 형식의 이미지만 업로드 가능합니다.');
+                    return;
+                }
+
+                // 파일 크기 검증 (10MB)
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('파일 크기는 10MB를 초과할 수 없습니다.');
+                    return;
+                }
+
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    window.location.href = '/login';
+                    return;
+                }
+
+                try {
+                    // FormData 생성
+                    const formData = new FormData();
+                    formData.append('file', file);
+
+                    // 업로드 요청
+                    const response = await fetch('/api/auth/profile-image', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('업로드 실패');
+                    }
+
+                    const user = await response.json();
+
+                    // 프로필 다시 로드
+                    displayProfile(user);
+
+                    alert('프로필 사진이 업데이트되었습니다.');
+                } catch (error) {
+                    console.error('프로필 사진 업로드 실패:', error);
+                    alert('프로필 사진 업로드에 실패했습니다.');
+                }
+            }
+
+            // 프로필 사진 삭제
+            async function deleteProfileImage() {
+                if (!confirm('프로필 사진을 삭제하시겠습니까?')) {
+                    return;
+                }
+
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    window.location.href = '/login';
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/api/auth/profile-image', {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('삭제 실패');
+                    }
+
+                    const user = await response.json();
+
+                    // 프로필 다시 로드
+                    displayProfile(user);
+
+                    alert('프로필 사진이 삭제되었습니다.');
+                } catch (error) {
+                    console.error('프로필 사진 삭제 실패:', error);
+                    alert('프로필 사진 삭제에 실패했습니다.');
+                }
+            }
+
+            // 초기 로드
+            loadProfile();
+        </script>
+    </th:block>
+</body>
+</html>
