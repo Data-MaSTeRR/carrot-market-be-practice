@@ -52,7 +52,6 @@ public class AuthService {
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword())) // 비밀번호 -> 암호화 후에 저장
-                .nickname(request.getNickname())
                 .phoneNumber(request.getPhoneNumber())
                 .location(request.getLocation())
                 .mannerTemperature(36.5)
@@ -77,26 +76,26 @@ public class AuthService {
     public JwtResponse login(LoginRequest request) {
         // AuthenticationManager가 인증 실패 시 BadCredentialsException 발생 (일반적 메시지)
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
 
         // 인증 성공 후에는 사용자가 반드시 존재하므로 User Enumeration 위험 없음
-        User user = userRepository.findByUsername(request.getUsername())
+        User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("인증 처리 중 오류가 발생했습니다"));
 
-        return new JwtResponse(jwt, user.getId(), user.getUsername(), user.getEmail(), user.getNickname());
+        return new JwtResponse(jwt, user.getId(), user.getUsername(), user.getEmail());
     }
 
     @Transactional(readOnly = true)
     public UserResponse getCurrentUser() {
         // 인증 정보 가져오기 from SecurityContextHolder `JwtAuthenticationFilter`
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
+        String email = authentication.getName();
 
-        User user = userRepository.findByUsername(username)
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("인증 처리 중 오류가 발생했습니다"));
 
         return UserResponse.from(user);

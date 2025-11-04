@@ -15,7 +15,6 @@ public class UserResponse {
     private Long id;
     private String username;
     private String email;
-    private String nickname;
     private String phoneNumber;
     private String profileImageUrl;
     private String location;
@@ -26,7 +25,6 @@ public class UserResponse {
                 .id(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
-                .nickname(user.getNickname())
                 .phoneNumber(user.getPhoneNumber())
                 .profileImageUrl(user.getProfileImageUrl())
                 .location(user.getLocation())

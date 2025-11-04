@@ -21,8 +21,8 @@ public class UserDetailsService implements org.springframework.security.core.use
 
     @Override
     @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다"));
 
         // 계정 비활성화 상태 검증
@@ -35,7 +35,7 @@ public class UserDetailsService implements org.springframework.security.core.use
 
         return org.springframework.security.core.userdetails.User
                 .builder()
-                .username(user.getUsername())
+                .username(user.getEmail()) // Principal을 email로 설정
                 .password(user.getPassword())
                 .authorities(authorities)
                 .accountExpired(false)

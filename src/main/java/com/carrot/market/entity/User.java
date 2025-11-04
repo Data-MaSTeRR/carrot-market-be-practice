@@ -37,9 +37,6 @@ public class User {
     @Column(nullable = false, length = 255) // VARCHAR(255) NOT NULL
     private String password;
 
-    @Column(nullable = false, length = 50)
-    private String nickname;
-
     @Column(name = "phone_number", length = 20)
     private String phoneNumber;
 

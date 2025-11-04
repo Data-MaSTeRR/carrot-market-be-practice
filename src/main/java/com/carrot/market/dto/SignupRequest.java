@@ -14,12 +14,10 @@ import lombok.NoArgsConstructor;
 public class SignupRequest {
 
     // Validation 제약 조건 상수
-    private static final int USERNAME_MIN_LENGTH = 4;
-    private static final int USERNAME_MAX_LENGTH = 20;
+    private static final int USERNAME_MIN_LENGTH = 1;
+    private static final int USERNAME_MAX_LENGTH = 10;
     private static final int PASSWORD_MIN_LENGTH = 8;
     private static final int PASSWORD_MAX_LENGTH = 40;
-    private static final int NICKNAME_MIN_LENGTH = 2;
-    private static final int NICKNAME_MAX_LENGTH = 20;
     private static final String PASSWORD_PATTERN = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
 
     @NotBlank(message = "사용자명은 필수입니다")
@@ -39,11 +37,6 @@ public class SignupRequest {
             message = "비밀번호는 대문자, 소문자, 숫자, 특수문자(@$!%*?&)를 각각 최소 1개 이상 포함해야 합니다"
     )
     private String password;
-
-    @NotBlank(message = "닉네임은 필수입니다")
-    @Size(min = NICKNAME_MIN_LENGTH, max = NICKNAME_MAX_LENGTH,
-          message = "닉네임은 " + NICKNAME_MIN_LENGTH + "~" + NICKNAME_MAX_LENGTH + "자여야 합니다")
-    private String nickname;
 
     private String phoneNumber;
 
