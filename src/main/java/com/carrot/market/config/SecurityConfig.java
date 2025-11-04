@@ -48,6 +48,9 @@ public class SecurityConfig {
             "/",
             "/signup",
             "/login",
+            "/my/**",
+            "/chat/**",
+            "/products/**",
 
             // 운영용
             "/api/auth/**",
@@ -67,7 +70,8 @@ public class SecurityConfig {
     private static final String[] STATIC_RESOURCES = {
             "/css/**",
             "/js/**",
-            "/images/**"
+            "/images/**",
+            "/uploads/**"
     };
 
     // ---------------------------------------------------------------
