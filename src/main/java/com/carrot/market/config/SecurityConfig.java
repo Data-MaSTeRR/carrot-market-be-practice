@@ -2,6 +2,7 @@ package com.carrot.market.config;
 
 import com.carrot.market.security.UserDetailsService;
 import com.carrot.market.security.JwtAuthenticationFilter;
+import com.carrot.market.util.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,6 +37,7 @@ public class SecurityConfig {
 
     // @RequiredArgsConstructor가 생성자 주입 처리
     private final UserDetailsService userDetailsService;
+    private final JwtUtils jwtUtils;
 
     // ---------------------------------------------------------------
 
@@ -69,7 +71,7 @@ public class SecurityConfig {
      */
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter();
+        return new JwtAuthenticationFilter(jwtUtils, userDetailsService);
     }
 
     /**
@@ -116,7 +118,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 // `UsernamePasswordAuthenticationFilter` 전에 `JwtAuthenticationFilter` 적용
-                // -> 가장 먼저 jwt토큰 검증
+                // -> 가장 먼저 이미 발급받은 Jwt 토큰을 검증
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
