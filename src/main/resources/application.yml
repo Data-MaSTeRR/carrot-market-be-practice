@@ -10,8 +10,7 @@ spring:
   
   jpa:
     hibernate:
-      ddl-auto: none  # 또는 create, create-drop, validate, none -> 처음에 생성할때만 create
-      # 따로 schema.sql이 필요가 없음 -> 엔티티 기준으로 알아서 테이블 생성
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
@@ -51,7 +50,7 @@ jwt:
   # export JWT_SECRET="생성된_강한_키"
   # 강한 키 생성: openssl rand -base64 64
   secret: ${JWT_SECRET:fouM1TYPkP5pejlTXSQ1kXKHAwO4BApoQ6O9o2Wx02e+wh8xF93Rq8BdvlCLLX2nR0jsOGbA0KQoVYLvqPm7ww==}
-  expiration: ${JWT_EXPIRATION:86400000} # 24시간 (밀리초)
+  expiration: ${JWT_EXPIRATION:3600000} # 1시간 (밀리초)
 
 logging:
   level:
